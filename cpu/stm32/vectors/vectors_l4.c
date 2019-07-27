@@ -61,10 +61,12 @@ WEAK_DEFAULT void isr_dma2_channel6(void);
 WEAK_DEFAULT void isr_dma2_channel7(void);
 WEAK_DEFAULT void isr_dma2d(void);
 WEAK_DEFAULT void isr_dmamux1_ovr(void);
+WEAK_DEFAULT void isr_dsi(void);
 WEAK_DEFAULT void isr_exti(void);
 WEAK_DEFAULT void isr_flash(void);
 WEAK_DEFAULT void isr_fmc(void);
 WEAK_DEFAULT void isr_fpu(void);
+WEAK_DEFAULT void isr_gfxmmu(void);
 WEAK_DEFAULT void isr_i2c1_er(void);
 WEAK_DEFAULT void isr_i2c1_ev(void);
 WEAK_DEFAULT void isr_i2c2_er(void);
@@ -77,6 +79,8 @@ WEAK_DEFAULT void isr_lcd(void);
 WEAK_DEFAULT void isr_lptim1(void);
 WEAK_DEFAULT void isr_lptim2(void);
 WEAK_DEFAULT void isr_lpuart1(void);
+WEAK_DEFAULT void isr_ltdc(void);
+WEAK_DEFAULT void isr_ltdc_er(void);
 WEAK_DEFAULT void isr_octospi1(void);
 WEAK_DEFAULT void isr_octospi2(void);
 WEAK_DEFAULT void isr_otg_fs(void);
@@ -255,7 +259,7 @@ ISR_VECTOR(1) const isr_t vector_cpu[CPU_IRQ_NUMOF] = {
     [CAN2_SCE_IRQn           ] = isr_can2_sce,             /* [89] CAN2 SCE interrupt */
     [DMA2D_IRQn              ] = isr_dma2d,                /* [90] DMA2D global interrupt */
 #endif
-#if defined(CPU_MODEL_STM32L4R5ZI)
+#if defined(CPU_MODEL_STM32L4R5ZI) || defined(CPU_MODEL_STM32L4R9AI)
     [ADC1_IRQn               ] = isr_adc1,                 /* [18] ADC1 global Interrupts */
     [TIM1_TRG_COM_TIM17_IRQn ] = isr_tim1_trg_com_tim17,   /* [26] TIM1 Trigger and Commutation Interrupt and TIM17 global interrupt */
     [TIM3_IRQn               ] = isr_tim3,                 /* [29] TIM3 global Interrupt */
@@ -288,5 +292,11 @@ ISR_VECTOR(1) const isr_t vector_cpu[CPU_IRQ_NUMOF] = {
     [DCMI_IRQn               ] = isr_dcmi,                 /* [85] DCMI global interrupt */
     [DMA2D_IRQn              ] = isr_dma2d,                /* [90] DMA2D global interrupt */
     [DMAMUX1_OVR_IRQn        ] = isr_dmamux1_ovr,          /* [94] DMAMUX1 overrun global interrupt */
+#endif
+#if defined(CPU_MODEL_STM32L4R9AI)
+    [DSI_IRQn                ] = isr_dsi,                  /* [78] DSI global Interrupt */
+    [LTDC_IRQn               ] = isr_ltdc,                 /* [91] LTDC global Interrupt */
+    [LTDC_ER_IRQn            ] = isr_ltdc_er,              /* [92] LTDC Error global Interrupt */
+    [GFXMMU_IRQn             ] = isr_gfxmmu,               /* [93] GFXMMU global error interrupt */
 #endif
 };

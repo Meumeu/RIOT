@@ -108,7 +108,7 @@ extern "C" {
 #define CPU_IRQ_NUMOF                   (83U)
 #elif defined(CPU_MODEL_STM32L496ZG) || defined(CPU_MODEL_STM32L496AG)
 #define CPU_IRQ_NUMOF                   (91U)
-#elif defined(CPU_MODEL_STM32L4R5ZI)
+#elif defined(CPU_MODEL_STM32L4R5ZI) || defined(CPU_MODEL_STM32L4R9AI)
 #define CPU_IRQ_NUMOF                   (95U)
 #elif defined(CPU_FAM_STM32L4)
 #define CPU_IRQ_NUMOF                   (82U)
