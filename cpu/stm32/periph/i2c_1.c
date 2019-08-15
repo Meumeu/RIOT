@@ -99,8 +99,25 @@ void i2c_init(i2c_t dev)
     gpio_init_af(i2c_config[dev].sda_pin, i2c_config[dev].sda_af);
 
     DEBUG("[i2c] init: configuring device\n");
-    /* set the timing register value from predefined values */
-    i2c_timing_param_t tp = timing_params[i2c_config[dev].speed];
+    /* set the timing register */
+    uint32_t clk = CLOCK_APB1;
+    i2c_timing_param_ns_t tp_ns = timing_params_ns[i2c_config[dev].speed];
+    int prescaler = clk / 8000000;
+    uint32_t scaled_clk_mhz = clk / 1000000 / prescaler;
+
+    i2c_timing_param_t tp = {
+        .presc = prescaler - 1,
+        .scldel = tp_ns.scldel_ns * scaled_clk_mhz / 1000 - 1,
+        .sdadel = tp_ns.sdadel_ns * scaled_clk_mhz / 1000 - 1,
+        .sclh = tp_ns.sclh_ns * scaled_clk_mhz / 1000 - 1,
+        .scll = tp_ns.scll_ns * scaled_clk_mhz / 1000 - 1
+    };
+    assert(tp.presc <= 15);
+    assert(tp.scldel <= 15);
+    assert(tp.sdadel <= 15);
+    assert(tp.sclh <= 255);
+    assert(tp.scll <= 255);
+
     uint32_t timing = (( (uint32_t)tp.presc << I2C_TIMINGR_PRESC_Pos) |
                        ( (uint32_t)tp.scldel << I2C_TIMINGR_SCLDEL_Pos) |
                        ( (uint32_t)tp.sdadel << I2C_TIMINGR_SDADEL_Pos) |

@@ -706,6 +706,13 @@ typedef struct {
 #if defined(CPU_FAM_STM32F0) || defined(CPU_FAM_STM32F3) || \
     defined(CPU_FAM_STM32F7) || defined(CPU_FAM_STM32L0) || \
     defined(CPU_FAM_STM32L4) ||  defined(CPU_FAM_STM32WB)
+typedef struct {
+    uint32_t scll_ns;       /**< SCL Low period */
+    uint32_t sclh_ns;       /**< SCL High period */
+    uint32_t sdadel_ns;     /**< Data hold time */
+    uint32_t scldel_ns;     /**< Data setup time */
+} i2c_timing_param_ns_t;
+
 /**
  * @brief   Structure for I2C timing register settings
  *
