@@ -202,8 +202,12 @@ typedef struct {
  * @brief Static initializer for #irq_event_t.
  */
 #define IRQ_EVENT_INIT { \
-                            .event.handler = NULL, \
-                            .event.list_node.next = NULL, \
+                            .event = { \
+                                .list_node = { \
+                                    .next = NULL \
+                                } , \
+                                .handler = NULL \
+                            }, \
                             .pending = false, \
                             .isr = NULL, \
                             .ctx = NULL, \
