@@ -124,7 +124,8 @@ extern "C" {
  * @brief   Flash page configuration
  * @{
  */
-#if defined(CPU_FAM_STM32WB)
+#if defined(CPU_FAM_STM32WB) || defined(CPU_LINE_STM32L4R5xx) \
+   || defined(CPU_LINE_STM32L4R9xx)
 #define FLASHPAGE_SIZE                  (4096U)
 #elif defined(CPU_LINE_STM32F091xC) || defined(CPU_LINE_STM32F072xB) \
    || defined(CPU_LINE_STM32F030xC) || defined(CPU_LINE_STM32F103xE) \
