@@ -28,11 +28,11 @@
 #endif
 
 #if (__SIZEOF_POINTER__ == 2)
-#define TEST_ADDRESS1       (uint16_t)flashpage_addr(LAST_AVAILABLE_PAGE)
-#define TEST_ADDRESS2       (uint16_t)flashpage_addr(LAST_AVAILABLE_PAGE - 1)
+#define TEST_ADDRESS1       (uint16_t)(LAST_AVAILABLE_PAGE * FLASHPAGE_SIZE)
+#define TEST_ADDRESS2       (uint16_t)((LAST_AVAILABLE_PAGE - 1) * FLASHPAGE_SIZE)
 #else
-#define TEST_ADDRESS1       (uint32_t)flashpage_addr(LAST_AVAILABLE_PAGE)
-#define TEST_ADDRESS2       (uint32_t)flashpage_addr(LAST_AVAILABLE_PAGE - 1)
+#define TEST_ADDRESS1       (uint32_t)(LAST_AVAILABLE_PAGE * FLASHPAGE_SIZE)
+#define TEST_ADDRESS2       (uint32_t)((LAST_AVAILABLE_PAGE - 1) * FLASHPAGE_SIZE)
 #endif
 #define TEST_ADDRESS0       (FLASHPAGE_NUMOF - 1)
 

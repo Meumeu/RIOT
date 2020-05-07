@@ -27,7 +27,8 @@
 #include "mtd_flashpage.h"
 #include "periph/flashpage.h"
 
-#define MTD_FLASHPAGE_END_ADDR     ((uint32_t) CPU_FLASH_BASE + (FLASHPAGE_NUMOF * FLASHPAGE_SIZE))
+#define MTD_FLASHPAGE_SIZE         ((uint32_t) FLASHPAGE_NUMOF * FLASHPAGE_SIZE)
+#define MTD_FLASHPAGE_END_ADDR     ((uint32_t) CPU_FLASH_BASE + MTD_FLASHPAGE_SIZE)
 
 static int _init(mtd_dev_t *dev)
 {
@@ -38,7 +39,7 @@ static int _init(mtd_dev_t *dev)
 
 static int _read(mtd_dev_t *dev, void *buf, uint32_t addr, uint32_t size)
 {
-    assert(addr < MTD_FLASHPAGE_END_ADDR);
+    assert(addr < MTD_FLASHPAGE_SIZE);
 
     (void)dev;
 
@@ -47,9 +48,9 @@ static int _read(mtd_dev_t *dev, void *buf, uint32_t addr, uint32_t size)
     }
 
 #if (__SIZEOF_POINTER__ == 2)
-    uint16_t dst_addr = addr;
+    uint16_t dst_addr = addr + CPU_FLASH_BASE;
 #else
-    uint32_t dst_addr = addr;
+    uint32_t dst_addr = addr + CPU_FLASH_BASE;
 #endif
 
     memcpy(buf, (void *)dst_addr, size);
@@ -70,14 +71,14 @@ static int _write(mtd_dev_t *dev, const void *buf, uint32_t addr, uint32_t size)
     if (size % FLASHPAGE_RAW_BLOCKSIZE) {
         return -EOVERFLOW;
     }
-    if (addr + size > MTD_FLASHPAGE_END_ADDR) {
+    if (addr + size > MTD_FLASHPAGE_SIZE) {
         return -EOVERFLOW;
     }
 
 #if (__SIZEOF_POINTER__ == 2)
-    uint16_t dst_addr = addr;
+    uint16_t dst_addr = addr + CPU_FLASH_BASE;
 #else
-    uint32_t dst_addr = addr;
+    uint32_t dst_addr = addr + CPU_FLASH_BASE;
 #endif
 
     flashpage_write_raw((void *)dst_addr, buf, size);
@@ -92,7 +93,7 @@ int _erase(mtd_dev_t *dev, uint32_t addr, uint32_t size)
     if (size % sector_size) {
         return -EOVERFLOW;
     }
-    if (addr + size > MTD_FLASHPAGE_END_ADDR) {
+    if (addr + size > MTD_FLASHPAGE_SIZE) {
         return -EOVERFLOW;
     }
     if (addr % sector_size) {
@@ -100,9 +101,9 @@ int _erase(mtd_dev_t *dev, uint32_t addr, uint32_t size)
     }
 
 #if (__SIZEOF_POINTER__ == 2)
-    uint16_t dst_addr = addr;
+    uint16_t dst_addr = addr + CPU_FLASH_BASE;
 #else
-    uint32_t dst_addr = addr;
+    uint32_t dst_addr = addr + CPU_FLASH_BASE;
 #endif
 
     for (size_t i = 0; i < size; i += sector_size) {
