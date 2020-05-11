@@ -71,7 +71,13 @@
 #endif
 #define PLL_M                       ((CLOCK_PLL_M - 1) << RCC_PLLCFGR_PLLM_Pos)
 
-#if (CLOCK_PLL_N < 8 || CLOCK_PLL_N > 86)
+#if defined(CPU_LINE_STM32L4R5xx) || defined(CPU_LINE_STM32L4R9xx)
+#define CLOCK_PLL_N_MAX 127
+#else
+#define CLOCK_PLL_N_MAX 86
+#endif
+
+#if (CLOCK_PLL_N < 8 || CLOCK_PLL_N > CLOCK_PLL_N_MAX)
 #error "PLL configuration: PLL N value is out of range"
 #endif
 #define PLL_N                       (CLOCK_PLL_N << RCC_PLLCFGR_PLLN_Pos)
@@ -107,6 +113,8 @@
 #else
 #define FLASH_WAITSTATES        FLASH_ACR_LATENCY_3WS
 #endif
+#elif defined(CPU_LINE_STM32L4R5xx) || defined(CPU_LINE_STM32L4R9xx)
+#define FLASH_WAITSTATES        ((CLOCK_AHB - 1) / 20000000U)
 #else
 #define FLASH_WAITSTATES        ((CLOCK_AHB - 1) / 16000000U)
 #endif
@@ -157,6 +165,13 @@ void stmclk_init_sysclk(void)
     while (!(RCC->CR & RCC_CR_HSERDY)) {}
 #endif
 
+#if (CLOCK_CORECLOCK > 80000000)
+    /* CPU frequency > 80MHz requires using range 1 boost instead of range 1 normal */
+    RCC->CFGR = (RCC->CFGR & ~RCC_CFGR_HPRE_Msk) | RCC_CFGR_HPRE_DIV2;
+    PWR->CR1 |= (PWR->CR1 & ~PWR_CR1_VOS_Msk) | PWR_CR1_VOS_0;
+    PWR->CR5 &= ~PWR_CR5_R1MODE;
+#endif
+
 #if ((CLOCK_HSE == 0) || CLOCK_MSI_ENABLE)
     /* reset clock to MSI with 48MHz, disables all other clocks */
 #if defined(CPU_FAM_STM32WB)
@@ -184,6 +199,13 @@ void stmclk_init_sysclk(void)
     /* now that the PLL is running, we use it as system clock */
     RCC->CFGR |= RCC_CFGR_SW_PLL;
     while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_PLL) {}
+
+#if (CLOCK_CORECLOCK > 80000000)
+    for (int i = 0; i < 100; ++i)
+        __asm__ volatile("nop");
+
+    RCC->CFGR = (RCC->CFGR & ~RCC_CFGR_HPRE_Msk) | RCC_CFGR_HPRE_DIV1;
+#endif
 
     stmclk_disable_hsi();
     irq_restore(is);
