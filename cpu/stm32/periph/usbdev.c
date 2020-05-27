@@ -620,6 +620,11 @@ static void _usbdev_init(usbdev_t *dev)
     /* Enable the clock to the peripheral */
     periph_clk_en(conf->ahb, conf->rcc_mask);
 
+#ifdef PWR_CR2_USV
+    /* Enable USB power in PWR_CR2 */
+    PWR->CR2 |= PWR_CR2_USV;
+#endif
+
     _enable_gpio(conf);
 
     /* TODO: implement ULPI mode when a board is available */
