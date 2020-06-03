@@ -40,6 +40,7 @@ static int _native_rtc_powered = 0;
 static struct tm _native_rtc_alarm;
 static rtc_alarm_cb_t _native_rtc_alarm_callback;
 static void *_native_rtc_alarm_argument;
+static time_t _native_rtc_delta_time = 0;
 
 void rtc_init(void)
 {
@@ -81,11 +82,8 @@ void rtc_poweroff(void)
     _native_rtc_powered = 0;
 }
 
-/* TODO: implement time setting using a delta */
 int rtc_set_time(struct tm *ttime)
 {
-    (void) ttime;
-
     DEBUG("rtc_set_time()\n");
 
     if (!_native_rtc_initialized) {
@@ -97,9 +95,15 @@ int rtc_set_time(struct tm *ttime)
         return -1;
     }
 
-    warnx("rtc_set_time: not implemented");
+    time_t new_time = mktime(ttime);
 
-    return -1;
+    _native_syscall_enter();
+    time_t now = time(NULL);
+    _native_syscall_leave();
+
+    _native_rtc_delta_time = new_time - now;
+
+    return 0;
 }
 
 int rtc_get_time(struct tm *ttime)
@@ -116,7 +120,7 @@ int rtc_get_time(struct tm *ttime)
     }
 
     _native_syscall_enter();
-    t = time(NULL);
+    t = time(NULL) + _native_rtc_delta_time;
 
     if (localtime_r(&t, ttime) == NULL) {
         err(EXIT_FAILURE, "rtc_get_time: localtime_r");
